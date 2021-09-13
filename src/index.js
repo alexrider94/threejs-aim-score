@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
 import gsap from 'gsap';
+import ButtonEvent from './events/button.js';
 
 class Main {
   _canvas = null;
@@ -35,6 +36,7 @@ class Main {
     this.setUp();
     // this.initGUI();
     this.tick();
+    this.addEvents();
   }
 
   initGUI = () => {
@@ -59,12 +61,18 @@ class Main {
       const x = array[i];
       const y = array[i + 1];
       const z = array[i + 2];
-
-      array[i + 2] = z + Math.random();
+      array[i] = x + (Math.random() - 0.5) * 3;
+      array[i + 1] = y + (Math.random() - 0.5) * 3;
+      array[i + 2] = z + (Math.random() - 0.5) * 3;
     }
 
+    randomValues.push(Math.random() * Math.PI * 2);
+
+    this._plane.geometry.attributes.position.randomValues = randomValues;
+    this._plane.geometry.attributes.position.originalPosition = this._plane.geometry.attributes.position.array;
+
     const colors = [];
-    for (let i = 0; i < this._plane.geometry.attributes.position.count; ++i) {
+    for (let i = 0; i < planeMesh.geometry.attributes.position.count; i++) {
       colors.push(0, 0.19, 0.4);
     }
 
@@ -80,10 +88,11 @@ class Main {
     this._renderer.render(this._scene, this._camera);
     this._raycaster.setFromCamera(this._mouse, this._camera);
     const { array, originalPosition, randomValues } = this._plane.geometry.attributes.position;
-    for (let i = 0; i < array.length; i += 3) {
-      array[i] = originalPosition[i] + Math.cos(this._frame + randomValues[i]) * 0.0025;
 
-      array[i + 1] = originalPosition[i + 1] + Math.sin(this._frame + randomValues[i + 1]) * 0.0025;
+    for (let i = 0; i < array.length; i += 3) {
+      array[i] = originalPosition[i] + Math.cos(this._frame + randomValues[i]) * 0.01;
+
+      array[i + 1] = originalPosition[i + 1] + Math.sin(this._frame + randomValues[i + 1]) * 0.001;
     }
 
     this._plane.geometry.attributes.position.needsUpdate = true;
@@ -145,6 +154,10 @@ class Main {
         },
       });
     }
+  };
+
+  addEvents = () => {
+    new ButtonEvent();
   };
 
   setUp = function () {

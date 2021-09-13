@@ -3,18 +3,51 @@
   padding: 0;
 }
 
+@font-face {
+  font-family: 'BebasNeue';
+  src: url('../assets//fonts/BebasNeue-Regular.ttf') format('woff');
+}
+
 html,
 body {
   overflow: hidden;
 }
 
 .app {
+  z-index: 1;
   position: absolute;
   top: 0;
   left: 0;
   outline: none;
 }
 
-#main {
+.main {
+  font-family: 'BebasNeue';
+  display: block;
+  z-index: 2;
+  color: white;
   position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+}
+
+.button {
+  font-family: 'BebasNeue';
+  background-color: transparent;
+  border: 0.1rem solid white;
+  color: white;
+  padding: 0.4rem 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.6rem;
+  margin: 0.7rem auto;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: white;
+  color: gray;
 }

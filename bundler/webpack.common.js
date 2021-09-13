@@ -4,7 +4,7 @@ const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
 module.exports = {
-  entry: path.resolve(__dirname, '../src/index.js'),
+  entry: { index: path.resolve(__dirname, '../src/index.js'), game: path.resolve(__dirname, '../src/game/index.js') },
   output: {
     filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, '../dist'),
@@ -16,7 +16,15 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../src/index.html'),
+      excludeChunks: ['game'],
       minify: true,
+    }),
+    new HtmlWebpackPlugin({
+      title: 'Game',
+      hash: true,
+      filename: 'game.html',
+      chunks: ['game'], // entry에서 해당 리스트만 포함
+      template: path.resolve(__dirname, '../src/game/game.html'),
     }),
     new MiniCSSExtractPlugin(),
   ],
