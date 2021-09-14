@@ -13,9 +13,8 @@ class Aim {
     const vertices = new Float32Array([0, this.y, 0, 0, -this.y, 0, 0, 0, 0, this.x, 0, 0, -this.x, 0, 0]);
 
     geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    console.log(geometry);
+
     this.crosshair = new THREE.Line(geometry, material);
-    console.log(this.crosshair);
     const crosshairPositionX = (this.crosshairPercentX / 100) * 2 - 1;
     const crosshairPositionY = (this.crosshairPercentY / 100) * 2 - 1;
 

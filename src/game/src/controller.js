@@ -1,14 +1,20 @@
+import { animate } from './animation';
+
 class BasicController {
-  constructor(velocity) {
-    this._input = new BasicControllerInput(velocity);
+  constructor(velocity, model, animations) {
+    this._input = new BasicControllerInput(velocity, model, animations);
   }
 }
 
 class BasicControllerInput {
   velocity = null;
+  model = null;
+  animations = null;
 
-  constructor(velocity) {
+  constructor(velocity, model, animations) {
     this.velocity = velocity;
+    this.model = model;
+    this.animations = animations;
     this._init();
   }
 
@@ -23,6 +29,11 @@ class BasicControllerInput {
 
     document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
     document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
+    document.addEventListener('click', () => this._onClick());
+  }
+
+  _onClick() {
+    animate(this.model, this.animations, 'Shoot');
   }
 
   _onKeyDown(event) {
@@ -41,7 +52,9 @@ class BasicControllerInput {
       case 'KeyS':
         this._keys.moveBackward = true;
         break;
-
+      case 'KeyR':
+        animate(this.model, this.animations, 'Reload');
+        break;
       case 'ArrowRight':
       case 'KeyD':
         this._keys.moveRight = true;

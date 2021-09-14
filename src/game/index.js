@@ -25,7 +25,8 @@ class Game {
   velocity = new THREE.Vector3();
   direction = new THREE.Vector3();
   movement = new BasicController(this.velocity);
-
+  mixer = null;
+  clock = new THREE.Clock();
   constructor() {
     // document.onkeydown = this.keyDown;
     // document.onkeyup = this.keyUp;
@@ -41,6 +42,10 @@ class Game {
       this._renderer.setSize(this._size.width, this._size.height);
     });
 
+    window.addEventListener('click', () => {
+      this.controls.lock();
+    });
+
     this.setUpThreeComponents();
     this.initLoad();
     this.animate();
@@ -50,7 +55,8 @@ class Game {
     this._scene.background = new THREE.Color(0xffffff);
     let vertex = new THREE.Vector3();
     const color = new THREE.Color();
-    const { model } = await loadPlayer();
+    const { model, animations } = await loadPlayer();
+    this.movement = new BasicController(this.velocity, model, animations);
     model.position.set(0, -160, -50);
 
     /* rotate player model */
@@ -64,7 +70,6 @@ class Game {
 
     this.controls = new PointerLockControls(this._camera, document.body);
     this._scene.add(this.controls.getObject());
-    this.controls.lock();
 
     let floorGeometry = new THREE.PlaneGeometry(2000, 2000, 100, 100);
     floorGeometry.rotateX(-Math.PI / 2);
@@ -124,8 +129,8 @@ class Game {
       this.direction.x = Number(movement.moveRight) - Number(movement.moveLeft);
       this.direction.normalize(); // this ensures consistent movements in all directions
 
-      if (movement.moveForward || movement.moveBackward) this.velocity.z -= this.direction.z * 400.0 * delta;
-      if (movement.moveLeft || movement.moveRight) this.velocity.x -= this.direction.x * 400.0 * delta;
+      if (movement.moveForward || movement.moveBackward) this.velocity.z -= this.direction.z * 1400.0 * delta;
+      if (movement.moveLeft || movement.moveRight) this.velocity.x -= this.direction.x * 1000.0 * delta;
 
       // if (onObject === true) {
       //   velocity.y = Math.max(0, velocity.y);
