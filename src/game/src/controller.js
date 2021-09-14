@@ -1,8 +1,8 @@
 import { animate } from './animation';
 
 class BasicController {
-  constructor(velocity, model, animations) {
-    this._input = new BasicControllerInput(velocity, model, animations);
+  constructor(velocity, model, animations, scene) {
+    this._input = new BasicControllerInput(velocity, model, animations, scene);
   }
 }
 
@@ -10,11 +10,12 @@ class BasicControllerInput {
   velocity = null;
   model = null;
   animations = null;
-
-  constructor(velocity, model, animations) {
+  scene = null;
+  constructor(velocity, model, animations, scene) {
     this.velocity = velocity;
     this.model = model;
     this.animations = animations;
+    this.scene = scene;
     this._init();
   }
 

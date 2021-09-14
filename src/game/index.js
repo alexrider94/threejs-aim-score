@@ -4,9 +4,11 @@ import { loadPlayer } from './src/load';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import Aim from './src/crosshair/create';
 import BasicController from './src/controller';
+import Bullet from './src/bullet/bullet';
 
 class Game {
   player = null;
+  _bullets = [];
   $canvas = document.querySelector('.game');
   _scene = new THREE.Scene();
   _renderer = null;
@@ -16,10 +18,8 @@ class Game {
     height: window.innerHeight,
   };
   _key = {};
-  _planet = null;
-  _control = null;
   _direction = new THREE.Vector3();
-  raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
+  raycaster = new THREE.Raycaster();
   controls = null;
   prevTime = performance.now();
   velocity = new THREE.Vector3();
@@ -27,23 +27,23 @@ class Game {
   movement = new BasicController(this.velocity);
   mixer = null;
   clock = new THREE.Clock();
+
   constructor() {
-    // document.onkeydown = this.keyDown;
-    // document.onkeyup = this.keyUp;
     window.addEventListener('resize', () => {
       this._size.width = window.innerWidth;
       this._size.height = window.innerHeight;
-
       // Update camera
       this._camera.aspect = this._size.width / this._size.height;
       this._camera.updateProjectionMatrix();
-
       // Update renderer
       this._renderer.setSize(this._size.width, this._size.height);
     });
 
     window.addEventListener('click', () => {
       this.controls.lock();
+      const bullet = new Bullet();
+
+      bullet.addBullet(this._scene, this._camera);
     });
 
     this.setUpThreeComponents();
@@ -56,7 +56,8 @@ class Game {
     let vertex = new THREE.Vector3();
     const color = new THREE.Color();
     const { model, animations } = await loadPlayer();
-    this.movement = new BasicController(this.velocity, model, animations);
+    this.player = model;
+    this.movement = new BasicController(this.velocity, model, animations, this._scene);
     model.position.set(0, -160, -50);
 
     /* rotate player model */
@@ -162,8 +163,6 @@ class Game {
     this._camera = new THREE.PerspectiveCamera(75, this._size.width / this._size.height, 0.1, 1000);
 
     //set up camera
-    this._camera.position.x = 0;
-    this._camera.position.z = 200;
     this._scene.add(this._camera);
 
     //set up light
