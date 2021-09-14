@@ -12,7 +12,7 @@ module.exports = {
   devtool: 'source-map',
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [{ from: path.resolve(__dirname, '../static') }],
+      patterns: [{ from: path.resolve(__dirname, '../src/assets'), to: 'assets' }],
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../src/index.html'),
@@ -57,6 +57,18 @@ module.exports = {
             loader: 'file-loader',
             options: {
               outputPath: 'assets/images/',
+            },
+          },
+        ],
+      },
+      // Models
+      {
+        test: /\.(glb|gltf)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'assets/',
             },
           },
         ],

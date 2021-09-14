@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import '../style.css';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { loadPlayer } from './src/load';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import Aim from './src/crosshair/create';
+
 class Game {
   player = null;
   $canvas = document.querySelector('.game');
@@ -13,7 +16,7 @@ class Game {
   };
   _key = {};
   _planet = null;
-  gltfLoader = new GLTFLoader();
+  _control = null;
 
   constructor() {
     // document.onkeydown = this.keyDown;
@@ -31,43 +34,27 @@ class Game {
     });
 
     this.setUpThreeComponents();
+    this.initLoad();
     this.animate();
   }
 
-  // keyDown = (event) => {
-  //   this.keys[event.key] = true;
-  // };
+  initLoad = async () => {
+    const { model } = await loadPlayer();
+    model.position.set(0, -160, -50);
 
-  // keyUp = (event) => {
-  //   delete this.keys[event.key];
-  // };
+    /* rotate player model */
+    model.rotation.z = 3.1;
 
-  controlMovement = () => {
-    let moveSpeed = 0.05;
+    /* player arms and gun added to camera position */
+    this._camera.add(model);
 
-    if (this.keys['w']) {
-      console.log('test');
-      this.player.position.x -= Math.sin(this.player.rotation.y) * moveSpeed;
-      this.player.position.z -= Math.cos(this.player.rotation.y) * moveSpeed;
-    }
-    if (this.keys['s']) {
-      this.player.position.x += Math.sin(this.player.rotation.y) * moveSpeed;
-      this.player.position.z += Math.cos(this.player.rotation.y) * moveSpeed;
-    }
-
-    if (this.keys['d']) {
-      this.player.position.x += moveSpeed * Math.sin(this.player.rotation.y + Math.PI / 2);
-      this.player.position.z += moveSpeed * Math.cos(this.player.rotation.y - Math.PI / 2);
-    }
-    if (this.keys['a']) {
-      this.player.position.x -= moveSpeed * Math.sin(this.player.rotation.y + Math.PI / 2);
-      this.player.position.z -= moveSpeed * Math.cos(this.player.rotation.y - Math.PI / 2);
-    }
+    const aimBox = new Aim(this._camera);
+    this._camera.add(aimBox.crosshair);
   };
 
   animate = () => {
-    // this.controlMovement();
     requestAnimationFrame(this.animate);
+    this._control.update();
     this._renderer.render(this._scene, this._camera);
   };
 
@@ -78,36 +65,17 @@ class Game {
   setUpThreeComponents = () => {
     this._camera = new THREE.PerspectiveCamera(75, this._size.width / this._size.height, 0.1, 1000);
 
-    this._camera.position.x = 5;
-    this._camera.position.z = 100;
+    //set up camera
+    this._camera.position.x = 0;
+    this._camera.position.z = 200;
     this._scene.add(this._camera);
 
-    // this.player = new THREE.Object3D();
-    // this.player.position.set(0, 0, 0);
-    // this.player.add(this._camera);
-    this.gltfLoader.load(
-      '/assets/scene.gltf',
-      (gltf) => {
-        const root = gltf.scene;
-        this._scene.add(root);
-      },
-      (event) => {
-        console.log(event);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    this._scene.add(cube);
-
+    //set up light
     const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(0, -1, 1);
+    light.position.set(0, 0, 100);
     this._scene.add(light);
 
+    //set up renderer
     this._renderer = new THREE.WebGLRenderer({
       canvas: this.$canvas,
       antialias: true,
@@ -115,6 +83,8 @@ class Game {
 
     this._renderer.setSize(this._size.width, this._size.height);
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    this._control = new OrbitControls(this._camera, this._renderer.domElement);
   };
 
   /* get gl design */
