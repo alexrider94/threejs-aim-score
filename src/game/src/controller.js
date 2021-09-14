@@ -1,27 +1,24 @@
 class BasicController {
-  constructor() {
-    this._input = new BasicControllerInput();
-    this._setMachine = new StateMachine();
+  constructor(velocity) {
+    this._input = new BasicControllerInput(velocity);
   }
 }
 
-class PlayerController {
-  constructor() {}
-}
-
 class BasicControllerInput {
-  constructor() {
+  velocity = null;
+
+  constructor(velocity) {
+    this.velocity = velocity;
     this._init();
   }
 
   _init() {
     this._keys = {
-      forward: false,
-      backward: false,
-      left: false,
-      right: false,
-      space: false,
-      shift: false,
+      moveForward: false,
+      moveBackward: false,
+      moveLeft: false,
+      moveRight: false,
+      canJump: false,
     };
 
     document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
@@ -29,88 +26,57 @@ class BasicControllerInput {
   }
 
   _onKeyDown(event) {
-    switch (event.keyCode) {
-      case 87: //w
-        this._keys.forward = true;
+    switch (event.code) {
+      case 'ArrowUp':
+      case 'KeyW':
+        this._keys.moveForward = true;
         break;
-      case 65: //a
-        this._keys.left = true;
+
+      case 'ArrowLeft':
+      case 'KeyA':
+        this._keys.moveLeft = true;
         break;
-      case 83: //s
-        this._keys.backward = true;
+
+      case 'ArrowDown':
+      case 'KeyS':
+        this._keys.moveBackward = true;
         break;
-      case 68: //d
-        this._keys.right = true;
+
+      case 'ArrowRight':
+      case 'KeyD':
+        this._keys.moveRight = true;
         break;
-      case 32: //space
-        this._keys.space = true;
-        break;
-      case 16: //shift
-        this._keys.shift = true;
+
+      case 'Space':
+        if (this._keys.canJump === true) this.velocity.y += 350;
+        this._keys.canJump = false;
         break;
     }
   }
 
   _onKeyUp(event) {
-    switch (event.keyCode) {
-      case 87: //w
-        this._keys.forward = false;
+    switch (event.code) {
+      case 'ArrowUp':
+      case 'KeyW':
+        this._keys.moveForward = false;
         break;
-      case 65: //a
-        this._keys.left = false;
+
+      case 'ArrowLeft':
+      case 'KeyA':
+        this._keys.moveLeft = false;
         break;
-      case 83: //s
-        this._keys.backward = false;
+
+      case 'ArrowDown':
+      case 'KeyS':
+        this._keys.moveBackward = false;
         break;
-      case 68: //d
-        this._keys.right = false;
-        break;
-      case 32: //space
-        this._keys.space = false;
-        break;
-      case 16: //shift
-        this._keys.shift = false;
+
+      case 'ArrowRight':
+      case 'KeyD':
+        this._keys.moveRight = false;
         break;
     }
   }
 }
 
-class StateMachine {
-  constructor() {
-    this._state = {};
-    this._currentState = null;
-  }
-
-  _AddState(name, type) {
-    this._state[name] = type;
-  }
-
-  SetState(name) {
-    const prevState = this._currentState;
-
-    if (prevState) {
-      if (prevState.Name == name) {
-        return;
-      }
-      prevState.Exit();
-    }
-
-    const state = new this._states[name](this);
-
-    this._currentState = state;
-    state.Enter(prevState);
-  }
-
-  Update(timeElapsed, input) {
-    if (this._currentState) {
-      this._currentState.Update(timeElapsed, input);
-    }
-  }
-}
-
-class PlayerFSM extends StateMachine {
-  constructor(proxy) {
-    super();
-    this._proxy;
-  }
-}
+export default BasicController;
