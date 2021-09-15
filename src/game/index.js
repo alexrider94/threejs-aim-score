@@ -5,6 +5,7 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import Aim from './src/crosshair/create';
 import BasicController from './src/controller';
 import Bullet from './src/bullet/bullet';
+import Target from './src/target/target';
 
 class Game {
   player = null;
@@ -102,6 +103,9 @@ class Game {
 
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y = -50;
+
+    new Target().addTargetRandomly(this._scene);
+    console.log(this._scene.children);
     this._scene.add(floor);
   };
 
