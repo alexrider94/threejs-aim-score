@@ -15,16 +15,20 @@ class Bullet {
       }
 
       bullet.alive = true;
-      bullet.position.set(2.8, -1.9, -21);
+      bullet.position.set(2.5, -1.9, -21);
       setTimeout(function () {
         bullet.position.z += 0.02;
         bullet.alive = false;
         camera.remove(bullet);
       }, 1000);
       console.log(camera.rotation);
-      bullet.velocity = new THREE.Vector3(0, 0, -Math.cos(camera.rotation.y));
 
-      // camera.add(bullet);
+      const bulletVelocity = Math.cos(camera.rotation.y) > 0 ? 5 : -5;
+
+      bullet.velocity = new THREE.Vector3(0, 0, -bulletVelocity);
+
+      console.log(bullet.velocity);
+
       camera.add(bullet);
       scene.add(camera);
 
