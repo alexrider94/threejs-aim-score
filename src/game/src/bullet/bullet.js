@@ -15,18 +15,20 @@ class Bullet {
       }
 
       bullet.alive = true;
-      bullet.position.z = -21;
-      bullet.position.x = 2.8;
-      bullet.position.y = -1.9;
+      bullet.position.set(2.8, -1.9, -21);
       setTimeout(function () {
         bullet.position.z += 0.02;
         bullet.alive = false;
         camera.remove(bullet);
       }, 1000);
-      console.log(scene);
+      console.log(camera.rotation);
+      bullet.velocity = new THREE.Vector3(0, 0, -Math.cos(camera.rotation.y));
+
       // camera.add(bullet);
       camera.add(bullet);
       scene.add(camera);
+
+      return bullet;
     }
   }
 }

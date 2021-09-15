@@ -43,7 +43,7 @@ class Game {
       this.controls.lock();
       const bullet = new Bullet();
 
-      bullet.addBullet(this._scene, this._camera);
+      this._bullets.push(bullet.addBullet(this._scene, this._camera));
     });
 
     this.setUpThreeComponents();
@@ -113,10 +113,6 @@ class Game {
       this.raycaster.ray.origin.copy(this.controls.getObject().position);
       this.raycaster.ray.origin.y -= 10;
 
-      // const intersections = this.raycaster.intersect(objects);
-
-      // const onObject = intersections.length > 0;
-
       const delta = (time - this.prevTime) / 1000;
 
       this.velocity.x -= this.velocity.x * 10.0 * delta;
@@ -133,11 +129,6 @@ class Game {
       if (movement.moveForward || movement.moveBackward) this.velocity.z -= this.direction.z * 1400.0 * delta;
       if (movement.moveLeft || movement.moveRight) this.velocity.x -= this.direction.x * 1000.0 * delta;
 
-      // if (onObject === true) {
-      //   velocity.y = Math.max(0, velocity.y);
-      //   canJump = true;
-      // }
-
       this.controls.moveRight(-this.velocity.x * delta);
       this.controls.moveForward(-this.velocity.z * delta);
 
@@ -148,6 +139,16 @@ class Game {
         this.controls.getObject().position.y = 10;
 
         movement.canJump = true;
+      }
+
+      for (let index = 0; index < this._bullets.length; ++index) {
+        if (this._bullets[index] === undefined) continue;
+        if (this._bullets[index].alive == false) {
+          this._bullets.splice(index, 1);
+          continue;
+        }
+
+        this._bullets[index].position.add(this._bullets[index].velocity);
       }
     }
 
